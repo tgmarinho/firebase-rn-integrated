@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { FlatList, SafeAreaView } from "react-native";
-import Todo from "./Todo";
-import firestore from "@react-native-firebase/firestore";
-import { Appbar, TextInput, Button } from "react-native-paper";
+import React, { useState, useEffect } from 'react';
+import { FlatList, SafeAreaView } from 'react-native';
+import Todo from './Todo';
+import firestore from '@react-native-firebase/firestore';
+import {
+  Appbar,
+  TextInput,
+  Button,
+  ActivityIndicator,
+} from 'react-native-paper';
 
 export default function App() {
-  const [todo, setTodo] = useState("");
+  const [todo, setTodo] = useState('');
   const [loading, setLoading] = useState(true);
   const [todos, setTodos] = useState([]);
-  const ref = firestore().collection("todos");
+  const ref = firestore().collection('todos');
 
   useEffect(() => {
     return ref.onSnapshot(querySnapshot => {
@@ -18,7 +23,7 @@ export default function App() {
         list.push({
           id: doc.id,
           title,
-          complete
+          complete,
         });
       });
 
@@ -33,27 +38,28 @@ export default function App() {
   async function addTodo() {
     await ref.add({
       title: todo,
-      complete: false
+      complete: false,
     });
-    setTodo("");
+    setTodo('');
   }
 
   if (loading) {
-    return null; // or a spinner
+    return (
+      <ActivityIndicator style={{ flex: 1 }} animating={true} size="large" />
+    ); // or a spinner
   }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Appbar>
-        <Appbar.Content title={"TODOs List"} />
+        <Appbar.Content title={'TODOs List'} />
       </Appbar>
       <FlatList
-        style={{ flex: 1 }}
         data={todos}
         keyExtractor={item => item.id}
         renderItem={({ item }) => <Todo {...item} />}
       />
-      <TextInput label={"New Todo"} value={todo} onChangeText={setTodo} />
+      <TextInput label={'New Todo'} value={todo} onChangeText={setTodo} />
       <Button onPress={() => addTodo()}>Add TODO</Button>
     </SafeAreaView>
   );
